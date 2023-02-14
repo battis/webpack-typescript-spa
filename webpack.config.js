@@ -14,6 +14,7 @@ module.exports = ({
   template = 'public',
   build = 'build',
   publicPath = '/',
+  externals = {},
   favicon = false,
   appName = false,
 }) => {
@@ -72,6 +73,7 @@ module.exports = ({
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
     },
+    externals: externals,
     plugins: [
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin({
