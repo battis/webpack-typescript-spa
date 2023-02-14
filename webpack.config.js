@@ -1,0 +1,160 @@
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ImageMinimizerWebpackPlugin = require('image-minimizer-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
+
+module.exports = ({
+  root,
+  bundle = 'main',
+  entry = './src/index.ts',
+  template = 'public',
+  build = 'build',
+  publicPath = '/',
+  favicon = false,
+  appName = false,
+}) => {
+  const config = {
+    mode: 'production',
+    entry: { [bundle]: entry },
+    output: {
+      path: path.resolve(root, build),
+      filename: 'assets/js/[name].[contenthash].js',
+      publicPath: publicPath,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: {
+            loader: 'ts-loader',
+          },
+        },
+        {
+          test: /\.svg$/,
+          use: 'raw-loader',
+        },
+        {
+          test: /\.s?[ac]ss$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: { importLoaders: 2 },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: ['postcss-preset-env'],
+                },
+              },
+            },
+            {
+              loader: 'sass-loader',
+              options: { implementation: require('sass') },
+            },
+          ],
+        },
+        {
+          test: /\.(jpe?g|gif|png)/,
+          loader: 'file-loader',
+          options: {
+            name: '[name].[contenthash].[ext]',
+            outputPath: 'assets/images',
+          },
+        },
+      ],
+    },
+    resolve: {
+      extensions: ['.tsx', '.ts', '.js'],
+    },
+    plugins: [
+      new CleanWebpackPlugin(),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: template,
+            filter: (filePath) =>
+              !/index\.html$/ && !/(\.gitignore|README\.md)$/,
+          },
+          {
+            from: path.resolve(root, favicon, 'mask.svg'),
+            to: path.resolve(root, build, 'assets/favicon/apple-mask-icon.svg'),
+          },
+        ],
+      }),
+      new HtmlWebpackPlugin({
+        templateParameters: {
+          PUBLIC_PATH: publicPath,
+          APP_NAME: appName || bundle,
+        },
+        template: path.resolve(root, template, 'index.html'),
+        hash: true,
+      }),
+      new MiniCssExtractPlugin({
+        filename: 'assets/css/[name].[contenthash].css',
+      }),
+      new ImageMinimizerWebpackPlugin({
+        minimizer: {
+          implementation: ImageMinimizerWebpackPlugin.imageminMinify,
+          options: {
+            plugins: [
+              ['gifsicle', { interlaced: true }],
+              ['jpegtran', { progresive: true }],
+              ['optipng', { optimizationLevel: 5 }],
+              ['svgo', { plugins: ['preset-default', 'prefixIds'] }],
+            ],
+          },
+        },
+      }),
+    ],
+    optimization: {
+      minimize: true,
+      minimizer: ['...', new CssMinimizerWebpackPlugin()],
+      splitChunks: { chunks: 'all' },
+    },
+  };
+  if (favicon) {
+    config.plugins.push([
+      new FaviconsWebpackPlugin({
+        // startup screen
+        logo: path.resolve(root, favicon, 'startup.svg'),
+        outputPath: 'assets/startup/',
+        prefix: 'assets/startup/',
+        favicons: {
+          icons: {
+            android: false,
+            appleIcon: false,
+            appleStartup: true,
+            coast: false,
+            favicons: false,
+            firefox: false,
+            windows: false,
+            yandex: false,
+          },
+        },
+      }),
+      new FaviconsWebpackPlugin({
+        // favicons & manifest.json
+        logo: path.resolve(root, favicon, 'favicon.svg'),
+        outputPath: 'assets/favicon/',
+        prefix: 'assets/favicon/',
+        manifest: path.resolve(root, favicon, 'manifest.json'),
+        favicons: {
+          icons: {
+            appleStartup: false,
+            coast: false,
+            yandex: false,
+          },
+          start_url: `${publicPath}/contexts/default`,
+          scope: publicPath,
+        },
+      }),
+    ]);
+  }
+  return config;
+};
