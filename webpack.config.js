@@ -81,10 +81,6 @@ module.exports = ({
             filter: (filePath) =>
               !/index\.html$/ && !/(\.gitignore|README\.md)$/,
           },
-          {
-            from: path.resolve(root, favicon, 'mask.svg'),
-            to: path.resolve(root, build, 'assets/favicon/apple-mask-icon.svg'),
-          },
         ],
       }),
       new HtmlWebpackPlugin({
@@ -120,6 +116,14 @@ module.exports = ({
   };
   if (favicon) {
     config.plugins.push([
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(root, favicon, 'mask.svg'),
+            to: path.resolve(root, build, 'assets/favicon/apple-mask-icon.svg'),
+          },
+        ],
+      }),
       new FaviconsWebpackPlugin({
         // startup screen
         logo: path.resolve(root, favicon, 'startup.svg'),
