@@ -80,8 +80,9 @@ module.exports = ({
         patterns: [
           {
             from: template,
-            filter: (filePath) =>
-              !/index\.html$/ && !/(\.gitignore|README\.md)$/,
+            filter: (
+              filePath // FIXME does not seem to include PHP files
+            ) => !/index\.html$/ && !/(\.gitignore|README\.md)$/,
           },
         ],
       }),
