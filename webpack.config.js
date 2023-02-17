@@ -79,7 +79,7 @@ module.exports = ({
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: template,
+            from: path.resolve(root, template),
             to: path.resolve(root, build),
             filter: (filePath) =>
               !/index\.html$/ && !/(\.gitignore|README\.md)$/,
