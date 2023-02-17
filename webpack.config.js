@@ -81,7 +81,7 @@ module.exports = ({
           {
             from: path.resolve(root, template),
             to: path.resolve(root, build),
-            filter: (filePath) => !/index\.html$/,
+            filter: (filePath) => !/index\.html$/.test(filePath),
           },
         ],
       }),
