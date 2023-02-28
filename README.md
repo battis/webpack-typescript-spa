@@ -3,16 +3,22 @@
 In `.npmrc`:
 
 ```
-auto-install-peers = true
+auto-install-peers=true
+public-hoist-pattern[]=prettier
+public-hoist-pattern[]=*eslint*
+public-hoist-pattern[]=@tsconfig/recommended
+public-hoist-pattern[]=*webpack*
+public-hoist-pattern[]=*loader*
+public-hoist-pattern[]=sass
+public-hoist-pattern[]=postcss
+public-hoist-pattern[]=imagemin*
+public-hoist-pattern[]=favicons
 ```
 
 ```bash
-npm i -D @battis/webpack-typescript-spa@github:battis/webpack-typescript-spa
+pnpm i -D @battis/webpack-typescript-spa@github:battis/webpack-typescript-spa
 ```
-or
-```bash
-pnpm i -D --shamefully-hoist @battis/webpack-typescript-spa@github:battis/webpack-typescript-spa
-```
+
 (because not all tools are good about package resolution)
 
 In `webpack.config.js`:

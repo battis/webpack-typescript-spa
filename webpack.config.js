@@ -7,6 +7,8 @@ const ImageMinimizerWebpackPlugin = require('image-minimizer-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 
+// TODO explore resolve.modules
+
 module.exports = ({
   root,
   bundle = 'main',
