@@ -45,7 +45,7 @@ In `package.json`:
 
 Configuration options include, with defaults:
 
-```json
+```ts
 {
   root,
   bundle = 'main',
