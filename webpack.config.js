@@ -19,9 +19,10 @@ module.exports = ({
   externals = {},
   favicon = false,
   appName = false,
+  production = true,
 }) => {
   const config = {
-    mode: 'production',
+    mode: production ? 'production' : 'development',
     entry: { [bundle]: entry },
     output: {
       path: path.resolve(root, build),
@@ -42,25 +43,27 @@ module.exports = ({
         },
         {
           test: /\.s?[ac]ss$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            {
-              loader: 'css-loader',
-              options: { importLoaders: 2 },
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                postcssOptions: {
-                  plugins: ['postcss-preset-env'],
+          use: production
+            ? [
+              MiniCssExtractPlugin.loader,
+              {
+                loader: 'css-loader',
+                options: { importLoaders: 2 },
+              },
+              {
+                loader: 'postcss-loader',
+                options: {
+                  postcssOptions: {
+                    plugins: ['postcss-preset-env'],
+                  },
                 },
               },
-            },
-            {
-              loader: 'sass-loader',
-              options: { implementation: require('sass') },
-            },
-          ],
+              {
+                loader: 'sass-loader',
+                options: { implementation: require('sass') },
+              },
+            ]
+            : 'style-loader',
         },
         {
           test: /\.(jpe?g|gif|png)/,
@@ -163,6 +166,9 @@ module.exports = ({
         },
       }),
     ]);
+  }
+  if (!production) {
+    config.devtool = 'inline-source-map';
   }
   return config;
 };
