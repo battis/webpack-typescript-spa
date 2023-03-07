@@ -182,7 +182,7 @@ module.exports = ({
     config.devServer = {
       open: true,
       hot: true,
-      inline: true,
+      watchFiles: [path.join(root, template, '**/*')],
     };
   }
   return config;
