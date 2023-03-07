@@ -22,7 +22,7 @@ module.exports = ({
   production = true,
 }) => {
   const config = {
-    mode: production ? 'production' : 'development',
+    mode: 'production',
     entry: { [bundle]: entry },
     output: {
       path: path.resolve(root, build),
@@ -43,27 +43,25 @@ module.exports = ({
         },
         {
           test: /\.s?[ac]ss$/,
-          use: production
-            ? [
-              MiniCssExtractPlugin.loader,
-              {
-                loader: 'css-loader',
-                options: { importLoaders: 2 },
-              },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  postcssOptions: {
-                    plugins: ['postcss-preset-env'],
-                  },
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: { importLoaders: 2 },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: ['postcss-preset-env'],
                 },
               },
-              {
-                loader: 'sass-loader',
-                options: { implementation: require('sass') },
-              },
-            ]
-            : 'style-loader',
+            },
+            {
+              loader: 'sass-loader',
+              options: { implementation: require('sass') },
+            },
+          ],
         },
         {
           test: /\.(jpe?g|gif|png)/,
@@ -168,7 +166,19 @@ module.exports = ({
     ]);
   }
   if (!production) {
+    config.mode = 'development';
     config.devtool = 'inline-source-map';
+    config.module.rules = config.module.rules.map((rule) => {
+      if (rule.test == /\.s?[ac]ss$/) {
+        rule.use = rule.use.map((loader) => {
+          if (loader == MiniCssExtractPlugin.loader) {
+            loader = 'style-loader';
+          }
+          return loader;
+        });
+      }
+      return rule;
+    });
   }
   return config;
 };
