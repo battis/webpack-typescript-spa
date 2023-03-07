@@ -179,6 +179,11 @@ module.exports = ({
       }
       return rule;
     });
+    config.devServer = {
+      open: true,
+      hot: true,
+      inline: true,
+    };
   }
   return config;
 };
